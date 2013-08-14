@@ -1,0 +1,9 @@
+package lib.cards.models;
+
+public enum TableauSequence {
+    BUILD_DOWN_IN_SAME_SUIT,
+    BUILD_DOWN_IN_ALTERNATE_COLORS,
+    BUILD_DOWN_IN_SAME_COLOR,
+    BUILD_DOWN_IN_ANY_SUIT_BUT_SAME,
+    BUILD_DOWN_IN_ANY_SUIT,
+}
