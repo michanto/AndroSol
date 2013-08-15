@@ -2,3 +2,4 @@
 *.apk
 bin/
 gen/
+gen/com/example/androsol/R.java
