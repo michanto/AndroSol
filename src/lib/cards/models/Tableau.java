@@ -28,7 +28,7 @@ public class Tableau extends CardStack {
         case CARD_FROM_STOCK_OR_WASTE:
             return true;
         case KING:
-            return card.getValue() == CardValue.KING;
+            return card.getValue().equals(CardValue.KING);
         case NONE:
             return false;
         }
@@ -43,15 +43,15 @@ public class Tableau extends CardStack {
 
         switch (getTableauSequence()) {
         case BUILD_DOWN_IN_ALTERNATE_COLORS:
-            return card.getColor() != topCard.getColor();
+            return !card.getColor().equals(topCard.getColor());
         case BUILD_DOWN_IN_ANY_SUIT:
             return true;
         case BUILD_DOWN_IN_ANY_SUIT_BUT_SAME:
-            return card.getSuit() != topCard.getSuit();
+            return !card.getSuit().equals(topCard.getSuit());
         case BUILD_DOWN_IN_SAME_COLOR:
-            return card.getColor() == topCard.getColor();
+            return card.getColor().equals(topCard.getColor());
         case BUILD_DOWN_IN_SAME_SUIT:
-            return card.getSuit() == topCard.getSuit();
+            return card.getSuit().equals(topCard.getSuit());
         }
         return false;
     }

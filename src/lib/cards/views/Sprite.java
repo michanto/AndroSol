@@ -1,6 +1,7 @@
 package lib.cards.views;
 
 import lib.cards.utilities.Point;
+import lib.cards.utilities.Rect;
 import lib.cards.utilities.Size;
 
 public interface Sprite {
@@ -22,13 +23,15 @@ public interface Sprite {
 
     Size getSize();
 
+    Rect getRect();
+
     void setSize(Size value);
 
     int getZOrder();
 
     void setZOrder(int value);
 
-    boolean getVisibility();
+    boolean isVisibile();
 
-    void setVisibility(boolean value);
+    void setVisibile(boolean value);
 }

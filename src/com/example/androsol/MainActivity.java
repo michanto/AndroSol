@@ -9,8 +9,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.Spinner;
@@ -36,31 +34,8 @@ public class MainActivity extends Activity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
         gameSpinner.setAdapter(adapter);
-        gameSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> arg0, View arg1,
-                    int arg2, long arg3) {
-                int idx = gameSpinner.getSelectedItemPosition();
-                if (idx >= 0) {
-                    /*
-                     * MainActivity.this.gameBoard.gameController.getActions()
-                     * .newGame(props.get(idx),
-                     * MainActivity.this.gameBoard.getGame());
-                     */
-                    gameBoard.getGame().newGame(props.get(idx));
-                    gameBoard.drawBoard();
-                }
 
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> arg0) {
-                // TODO Auto-generated method stub
-
-            }
-        });
         loadGame();
-
     }
 
     private AndroidGameBoard gameBoard;
@@ -75,7 +50,7 @@ public class MainActivity extends Activity {
 
         GameProperties freeCell = GameProperties.getFreeCell();
         gameBoard.getGame().newGame(freeCell);
-        gameBoard.drawBoard();
+        gameBoard.layoutBoard();
     }
 
     @Override
@@ -86,7 +61,15 @@ public class MainActivity extends Activity {
     }
 
     public void sendMessage(View view) {
-        // Spinner gameSpinner = (Spinner) findViewById(R.id.game_spinner);
+        final Spinner gameSpinner = (Spinner) findViewById(R.id.game_spinner);
+        int idx = gameSpinner.getSelectedItemPosition();
+        if (idx >= 0) {
+            final List<GameProperties> props = GameProperties.getGames();
+            MainActivity.this.gameBoard.gameController.getActions().newGame(
+                    props.get(idx), MainActivity.this.gameBoard.getGame());
+            // gameBoard.getGame().newGame(props.get(idx));
+            // gameBoard.draw();
+        }
     }
 
     @Override
@@ -99,6 +82,10 @@ public class MainActivity extends Activity {
         case R.id.action_settings:
             openSettings();
             return true;
+        case R.id.action_undo:
+            this.gameBoard.gameController.getActions().undo();
+        case R.id.action_redo:
+            this.gameBoard.gameController.getActions().reInvoke();
         default:
             return super.onOptionsItemSelected(item);
         }

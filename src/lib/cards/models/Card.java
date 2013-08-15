@@ -55,8 +55,8 @@ public class Card {
     }
 
     public CardColor getColor() {
-        return (getSuit() == CardSuit.DIAMONDS || getSuit() == CardSuit.HEARTS) ? CardColor.RED
-                : CardColor.BLACK;
+        return (getSuit().equals(CardSuit.DIAMONDS) || getSuit().equals(
+                CardSuit.HEARTS)) ? CardColor.RED : CardColor.BLACK;
     }
 
     public String getName() {

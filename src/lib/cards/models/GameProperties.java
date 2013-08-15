@@ -222,7 +222,7 @@ public class GameProperties {
                 .getDeclaredMethods();
         String methodName = "get" + name;
         for (Method m : methods) {
-            if (m.getName() == methodName) {
+            if (m.getName().equals(methodName)) {
                 try {
                     return (GameProperties) m.invoke(null);
                 } catch (Exception e) {

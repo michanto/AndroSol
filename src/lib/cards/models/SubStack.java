@@ -23,7 +23,7 @@ public class SubStack {
         this.size = size;
 
         cards = new CardStack();
-        cards.addAll(stack.subList(stack.size() - size, size));
+        cards.addAll(stack.subList(stack.size() - size, stack.size()));
     }
 
     private CardStack stack;
@@ -46,8 +46,8 @@ public class SubStack {
 
     boolean IsValid() {
         // TODO: containsAll probably not enough.
-        return getStack().subList(getStack().size() - getSize(), getSize())
-                .containsAll(getCards());
+        return getStack().subList(getStack().size() - getSize(),
+                getStack().size()).containsAll(getCards());
     }
 
     private int size;

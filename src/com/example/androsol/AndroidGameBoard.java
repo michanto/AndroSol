@@ -1,15 +1,20 @@
 package com.example.androsol;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 import lib.cards.models.Card;
 import lib.cards.models.CardStack;
+import lib.cards.models.Game.NewGameListener;
+import lib.cards.models.GameEventObject;
 import lib.cards.models.GameProperties;
 import lib.cards.models.GameState;
 import lib.cards.utilities.Point;
 import lib.cards.views.CardSprite;
 import lib.cards.views.GameBoardImpl;
 import lib.cards.views.Sprite;
+import lib.cards.views.SpriteEventObject;
 import lib.cards.views.StackSprite;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -20,10 +25,37 @@ public class AndroidGameBoard extends GameBoardImpl<Bitmap> implements
     GameSurface surface;
 
     public AndroidGameBoard(FrameLayout frame) {
-        this.surface = new GameSurface(this, frame.getContext());
+        this.surface = new GameSurface(this, this, frame.getContext());
         frame.addView(this.surface);
+        this.getGame().getNewGameEvent().add(new NewGameListener() {
+
+            @Override
+            public void onNewGameAction(GameEventObject game) {
+                draw();
+            }
+        });
+        this.getSpriteSelectedEvent().add(new SpriteSelectedListener() {
+            @Override
+            public void onSpriteSelected(SpriteEventObject args) {
+                draw();
+            }
+        });
+        this.getSpriteDefaultActionEvent().add(
+                new SpriteDefaultActionListener() {
+                    @Override
+                    public void onSpriteDefaultAction(SpriteEventObject args) {
+                        draw();
+                    }
+
+                });
     }
 
+    public void draw() {
+        this.surface.draw();
+    }
+
+    // GameSurface.Drawable
+    @Override
     public void draw(Canvas canvas) {
         for (Sprite s : this.getSprites()) {
             ((GameSurface.Drawable) s).draw(canvas);
@@ -32,14 +64,15 @@ public class AndroidGameBoard extends GameBoardImpl<Bitmap> implements
 
     @Override
     protected void doMoveCardAnimation(CardStack cards, Point delta) {
-        // TODO Auto-generated method stub
-
+        this.layoutBoard();
+        this.draw();
     }
 
     @Override
     protected void doMoveCardAnimation(GameState oldState, GameState newState) {
         // TODO Auto-generated method stub
-
+        this.layoutBoard();
+        this.draw();
     }
 
     @Override
@@ -76,7 +109,7 @@ public class AndroidGameBoard extends GameBoardImpl<Bitmap> implements
      * sets the index and position.
      */
     @Override
-    protected void drawCard(Card card, Point position, int zIndex) {
+    protected void layoutCard(Card card, Point position, int zIndex) {
         Sprite sprite = cardSprites.get(card);
         sprite.setPosition(position);
         sprite.setZOrder(zIndex);
@@ -87,4 +120,14 @@ public class AndroidGameBoard extends GameBoardImpl<Bitmap> implements
         return getGame().getGameProperties();
     }
 
+    public Sprite hitTest(Point eventPoint) {
+        List<Sprite> sprites = getSprites();
+        Collections.reverse(sprites);
+        for (Sprite s : sprites) {
+            if (s.isVisibile() && s.getRect().Contains(eventPoint)) {
+                return s;
+            }
+        }
+        return null;
+    }
 }

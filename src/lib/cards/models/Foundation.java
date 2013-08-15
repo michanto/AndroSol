@@ -25,7 +25,7 @@ public class Foundation extends CardStack {
         switch (getFoundationBaseCard()) {
         case ACE:
         case ACES_DEALT_AT_START_OF_GAME:
-            return card.getValue() == CardValue.ACE;
+            return card.getValue().equals(CardValue.ACE);
         case DEALT_AT_RANDOM:
             return true;
         }
@@ -40,11 +40,11 @@ public class Foundation extends CardStack {
 
         switch (getFoundationSequence()) {
         case BUILD_UP_IN_ALTERNATE_COLORS:
-            return card.getColor() != topCard.getColor();
+            return !card.getColor().equals(topCard.getColor());
         case BUILD_UP_IN_SAME_COLOR:
-            return card.getColor() == topCard.getColor();
+            return card.getColor().equals(topCard.getColor());
         case BUILD_UP_IN_SAME_SUIT:
-            return card.getSuit() == topCard.getSuit();
+            return card.getSuit().equals(topCard.getSuit());
         case BUILD_UP_REGARDLESS_OF_SUIT:
             return true;
         }

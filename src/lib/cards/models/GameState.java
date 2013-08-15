@@ -108,6 +108,7 @@ public class GameState {
             CardState cardState = new CardState();
             cardState.setId(card.getId());
             cardState.setFaceUp(card.isFaceUp());
+            stackState.add(cardState);
         }
 
         return stackState;

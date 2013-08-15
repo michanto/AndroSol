@@ -1,6 +1,7 @@
 package com.example.androsol;
 
 import lib.cards.utilities.Point;
+import lib.cards.utilities.Rect;
 import lib.cards.utilities.Size;
 import lib.cards.views.Sprite;
 import android.graphics.Bitmap;
@@ -20,12 +21,13 @@ public class SpriteImpl implements Sprite, GameSurface.Drawable {
 
     public SpriteImpl(Bitmap bitmap) {
         this.bitmap = bitmap;
+        this.size = new Size(bitmap.getWidth(), bitmap.getHeight());
     }
 
     private Bitmap bitmap;
 
     public void draw(Canvas canvas) {
-        if (!getVisibility()) {
+        if (!isVisibile()) {
             return;
         }
         Paint paint = new Paint();
@@ -95,12 +97,17 @@ public class SpriteImpl implements Sprite, GameSurface.Drawable {
     }
 
     @Override
-    public boolean getVisibility() {
+    public boolean isVisibile() {
         return visibility;
     }
 
     @Override
-    public void setVisibility(boolean value) {
+    public void setVisibile(boolean value) {
         visibility = value;
+    }
+
+    @Override
+    public Rect getRect() {
+        return new Rect(getPosition(), getSize());
     }
 }

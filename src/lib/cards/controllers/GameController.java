@@ -18,12 +18,23 @@ import lib.cards.views.Sprite;
 import lib.cards.views.SpriteEventObject;
 import lib.cards.views.StackSprite;
 
-public class GameController implements SpriteSelectedListener,
-        SpriteDefaultActionListener {
+public class GameController {
     public GameController(GameBoard gameBoard) {
         this.gameBoard = gameBoard;
-        this.gameBoard.getSpriteSelectedEvent().add(this);
-        this.gameBoard.getSpriteDefaultActionEvent().add(this);
+        this.gameBoard.getSpriteSelectedEvent().add(
+                new SpriteSelectedListener() {
+                    @Override
+                    public void onSpriteSelected(SpriteEventObject args) {
+                        GameController.this.onSpriteSelected(args);
+                    }
+                });
+        this.gameBoard.getSpriteDefaultActionEvent().add(
+                new SpriteDefaultActionListener() {
+                    @Override
+                    public void onSpriteDefaultAction(SpriteEventObject args) {
+                        GameController.this.onSpriteDefaultAction(args);
+                    }
+                });
         actions = new Actions(getGame());
     }
 
@@ -52,7 +63,6 @@ public class GameController implements SpriteSelectedListener,
         selectedSprite = sprite;
     }
 
-    @Override
     public void onSpriteSelected(SpriteEventObject args) {
         Sprite sprite = args.getSprite();
         if (sprite == null) {
@@ -62,13 +72,13 @@ public class GameController implements SpriteSelectedListener,
         }
 
         if (getSelectedSprite() == null && sprite != null) {
-            if (sprite.getClass() == CardSprite.class) {
+            if (sprite instanceof CardSprite) {
                 CardSprite cardSprite = (CardSprite) sprite;
                 setSelectedSprite(cardSprite);
                 cardSprite.setHighlight(true);
             }
 
-            if (sprite.getClass() == StackSprite.class) {
+            if (sprite instanceof StackSprite) {
                 StackSprite stackSprite = (StackSprite) sprite;
                 if (stackSprite.getStack() != null
                         && stackSprite.getStack().getClass() == Stock.class) {
@@ -183,7 +193,6 @@ public class GameController implements SpriteSelectedListener,
         }
     }
 
-    @Override
     public void onSpriteDefaultAction(SpriteEventObject args) {
         Sprite sprite = args.getSprite();
         if (sprite == null || !CardSprite.class.isInstance(sprite)) {

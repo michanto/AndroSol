@@ -195,7 +195,7 @@ public class Game {
 
     public CardStack findStack(CardStackId cardStackId) {
         for (CardStack stack : getStacks()) {
-            if (stack.getCardStackId() == cardStackId) {
+            if (stack.getCardStackId().equals(cardStackId)) {
                 return stack;
             }
         }
@@ -332,7 +332,7 @@ public class Game {
 
     public CardStack stackFromId(CardStackId cardStackId) {
         for (CardStack s : getStacks()) {
-            if (s.getCardStackId() == cardStackId) {
+            if (s.getCardStackId().equals(cardStackId)) {
                 return s;
             }
         }
@@ -417,18 +417,20 @@ public class Game {
                     break;
                 }
 
-                if (gameProperties.getTableauType() == TableauType.KLONDIKE) {
+                if (gameProperties.getTableauType()
+                        .equals(TableauType.KLONDIKE)) {
                     tableaus.get(tableaus.size() - tableausToFill + i)
                             .add(card);
                 } else {
                     tableaus.get(i).add(card);
                 }
 
-                if (gameProperties.getTableauType() == TableauType.FORTY_THIEVES) {
+                if (gameProperties.getTableauType().equals(
+                        TableauType.FORTY_THIEVES)) {
                     card.setFaceUp(true);
                 }
             }
-            if (gameProperties.getTableauType() == TableauType.KLONDIKE) {
+            if (gameProperties.getTableauType().equals(TableauType.KLONDIKE)) {
                 tableaus.get(tableaus.size() - tableausToFill).peek()
                         .setFaceUp(true);
                 tableausToFill--;
@@ -511,7 +513,7 @@ public class Game {
         source.getStack().remove(
                 source.getStack().subList(
                         source.getStack().size() - source.getSize(),
-                        source.getSize()));
+                        source.getStack().size()));
         if (source.getStack().peek() != null && !isDeal) {
             source.getStack().peek().setFaceUp(true);
         }
@@ -548,7 +550,8 @@ public class Game {
 
         // Handle multiple card move rules.
         if (source.getSize() > 1) {
-            if (gameProperties.getMoveGroupsOfCardsAsAUnit() == MoveGroupsOfCardsAsAUnit.NO) {
+            if (gameProperties.getMoveGroupsOfCardsAsAUnit().equals(
+                    MoveGroupsOfCardsAsAUnit.NO)) {
                 // See if there are enough free spaces to handle the move
                 int numFreeCells = 0;
                 for (FreeCell freeCell : freeCells) {
@@ -558,7 +561,8 @@ public class Game {
                 }
 
                 // Are there enough free spaces?
-                if (gameProperties.getEmptyTableauPileFilledBy() == EmptyTableauPileFilledBy.ANY_CARD_IN_SEQUENCE) {
+                if (gameProperties.getEmptyTableauPileFilledBy().equals(
+                        EmptyTableauPileFilledBy.ANY_CARD_IN_SEQUENCE)) {
                     // Count empty tableaus as free cells
                     for (Tableau tableau : tableaus) {
                         if (tableau.peek() == null) {
@@ -585,7 +589,8 @@ public class Game {
             }
             topCard = card;
 
-            if (gameProperties.getMoveGroupsOfCardsAsAUnit() == MoveGroupsOfCardsAsAUnit.YES) {
+            if (gameProperties.getMoveGroupsOfCardsAsAUnit().equals(
+                    MoveGroupsOfCardsAsAUnit.YES)) {
                 // Only the first one has to work.
                 break;
             }

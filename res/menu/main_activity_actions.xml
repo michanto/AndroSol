@@ -6,6 +6,12 @@
           android:title="@string/action_search"
           android:showAsAction="ifRoom" />
     <!-- Settings, should always be in the overflow -->
+    <item android:id="@+id/action_undo"
+          android:title="@string/action_undo"
+          android:showAsAction="never" />
+    <item android:id="@+id/action_redo"
+          android:title="@string/action_redo"
+          android:showAsAction="never" />
     <item android:id="@+id/action_settings"
           android:title="@string/action_settings"
           android:showAsAction="never" />

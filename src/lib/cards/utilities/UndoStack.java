@@ -30,10 +30,12 @@ public class UndoStack {
             if (command.getClearsUndoStack()) {
                 commands.clear();
             } else if (index < getLastCommandIndex()) {
-                commands.remove(commands.subList(index + 1, commands.size()
-                        - getLastCommandIndex()));
+                commands.remove(commands.subList(index + 1, index + 1
+                        + commands.size() - getLastCommandIndex()));
+                commands.add(command);
+            } else {
+                commands.add(command);
             }
-            commands.add(command);
             setIndexToTop();
         }
         return false;

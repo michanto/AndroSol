@@ -37,8 +37,8 @@ public class CardStack extends ArrayList<Card> {
                 .toUpperCase(Locale.US);
         return StackType.valueOf(typeName);
         /*
-         * for (StackType p : StackType.values()) { if (p.name() == typeName) {
-         * return p; } }
+         * for (StackType p : StackType.values()) { if
+         * (p.name().equals(typeName)) { return p; } }
          * 
          * return type;
          */

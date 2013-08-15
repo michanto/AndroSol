@@ -41,4 +41,8 @@ public class NewGameAction extends GameAction {
         return true;
     }
 
+    @Override
+    public boolean getClearsUndoStack() {
+        return true;
+    }
 }

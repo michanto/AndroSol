@@ -23,14 +23,34 @@ import lib.cards.utilities.CollectionUtils;
 import lib.cards.utilities.Point;
 
 public abstract class GameBoardImpl<TTexture> extends GameBoardMetrics
-        implements GameBoard, NewGameListener, RestoreGameListener,
-        SubStackMovedListener, CardsMovedListener {
+        implements GameBoard {
     protected GameBoardImpl() {
         game = new Game();
-        game.getNewGameEvent().add(this);
-        game.getRestoreGameEvent().add(this);
-        game.getSubStackMovedEvent().add(this);
-        game.getCardsMovedEvent().add(this);
+        game.getNewGameEvent().add(new NewGameListener() {
+            @Override
+            public void onNewGameAction(GameEventObject game) {
+                GameBoardImpl.this.onNewGameAction(game);
+            }
+        });
+        game.getRestoreGameEvent().add(new RestoreGameListener() {
+            @Override
+            public void onRestoreGameAction(GameEventObject game) {
+                GameBoardImpl.this.onRestoreGameAction(game);
+            }
+
+        });
+        game.getSubStackMovedEvent().add(new SubStackMovedListener() {
+            @Override
+            public void onSubStackMoved(SubStackMovedEventObject args) {
+                GameBoardImpl.this.onSubStackMoved(args);
+            }
+        });
+        game.getCardsMovedEvent().add(new CardsMovedListener() {
+            @Override
+            public void onCardsMoved(CardsMovedEventObject args) {
+                GameBoardImpl.this.onCardsMoved(args);
+            }
+        });
         gameController = new GameController(this);
     }
 
@@ -71,12 +91,10 @@ public abstract class GameBoardImpl<TTexture> extends GameBoardMetrics
     protected abstract void doMoveCardAnimation(GameState oldState,
             GameState newState);
 
-    @Override
     public void onCardsMoved(CardsMovedEventObject args) {
         doMoveCardAnimation(args.getOldState(), args.getNewState());
     }
 
-    @Override
     public void onSubStackMoved(SubStackMovedEventObject args) {
         // Get position of first card removed from the source stack.
         Point oldPosition = CardPosition(args.getSource().getStack(), args
@@ -135,7 +153,6 @@ public abstract class GameBoardImpl<TTexture> extends GameBoardMetrics
     }
 
     public List<Sprite> getSprites() {
-
         final Comparator<Sprite> cmp = new Comparator<Sprite>() {
             @Override
             public int compare(Sprite s1, Sprite s2) {
@@ -170,7 +187,7 @@ public abstract class GameBoardImpl<TTexture> extends GameBoardMetrics
         termBoard();
         game.deal();
         remakeSprites();
-        drawBoard();
+        layoutBoard();
     }
 
     private void remakeSprites() {
@@ -217,18 +234,18 @@ public abstract class GameBoardImpl<TTexture> extends GameBoardMetrics
         }
     }
 
-    public void drawBoard() {
-        // Debug.WriteLine("DrawBoard");
+    public void layoutBoard() {
+        // Debug.WriteLine("layoutBoard");
         int cardOrder = 0;
-        cardOrder = drawStock(cardOrder);
-        cardOrder = drawWaste(cardOrder);
-        cardOrder = drawTableaus(cardOrder);
-        cardOrder = drawFoundations(cardOrder);
-        cardOrder = drawFreeCells(cardOrder);
+        cardOrder = layoutStock(cardOrder);
+        cardOrder = layoutWaste(cardOrder);
+        cardOrder = layoutTableaus(cardOrder);
+        cardOrder = layoutFoundations(cardOrder);
+        cardOrder = layoutFreeCells(cardOrder);
     }
 
-    private int drawStock(int zOrder) {
-        stockSprite.setVisibility(usesStock());
+    private int layoutStock(int zOrder) {
+        stockSprite.setVisibile(usesStock());
         if (!usesStock()) {
             return zOrder;
         }
@@ -239,13 +256,13 @@ public abstract class GameBoardImpl<TTexture> extends GameBoardMetrics
 
         for (int j = 0; j < game.getStock().size(); j++) {
             Card card = game.getStock().get(j);
-            drawCard(card, position, ++zOrder);
+            layoutCard(card, position, ++zOrder);
         }
         return zOrder;
     }
 
-    private int drawWaste(int zOrder) {
-        wasteSprite.setVisibility(usesWaste());
+    private int layoutWaste(int zOrder) {
+        wasteSprite.setVisibile(usesWaste());
         if (!usesWaste()) {
             return zOrder;
         }
@@ -255,26 +272,26 @@ public abstract class GameBoardImpl<TTexture> extends GameBoardMetrics
 
         for (int j = 0; j < game.getWaste().size(); j++) {
             Card card = game.getWaste().get(j);
-            drawCard(card, position, ++zOrder);
+            layoutCard(card, position, ++zOrder);
         }
 
         return zOrder;
     }
 
-    private int drawFoundations(int zOrder) {
+    private int layoutFoundations(int zOrder) {
         for (int i = 0; i < game.getFoundations().size(); i++) {
             Point position = getFoundationPosition(i);
             foundationSprites.get(i).setPosition(position);
             foundationSprites.get(i).setZOrder(++zOrder);
             for (int j = 0; j < game.getFoundations().get(i).size(); j++) {
                 Card card = game.getFoundations().get(i).get(j);
-                drawCard(card, position, ++zOrder);
+                layoutCard(card, position, ++zOrder);
             }
         }
         return zOrder;
     }
 
-    public int drawTableaus(int zOrder) {
+    public int layoutTableaus(int zOrder) {
         for (int i = 0; i < game.getTableaus().size(); i++) {
             Point position = getTableauPosition(i, 0);
             tableauSprites.get(i).setPosition(position);
@@ -282,13 +299,13 @@ public abstract class GameBoardImpl<TTexture> extends GameBoardMetrics
             for (int j = 0; j < game.getTableaus().get(i).size(); j++) {
                 Card card = game.getTableaus().get(i).get(j);
                 position = getTableauPosition(i, j);
-                drawCard(card, position, ++zOrder);
+                layoutCard(card, position, ++zOrder);
             }
         }
         return zOrder;
     }
 
-    public int drawFreeCells(int zOrder) {
+    public int layoutFreeCells(int zOrder) {
         for (int i = 0; i < game.getGameProperties().getNumberOfFreeCells(); i++) {
             Point position = getFreeCellPosition(i);
             freeCellSprites.get(i).setPosition(position);
@@ -296,13 +313,13 @@ public abstract class GameBoardImpl<TTexture> extends GameBoardMetrics
             for (int j = 0; j < game.getFreeCells().get(i).size(); j++) {
                 FreeCell freeCell = game.getFreeCells().get(i);
                 Card card = freeCell.get(j);
-                drawCard(card, position, ++zOrder);
+                layoutCard(card, position, ++zOrder);
             }
         }
         return zOrder;
     }
 
-    protected abstract void drawCard(Card card, Point position, int zIndex);
+    protected abstract void layoutCard(Card card, Point position, int zIndex);
 
     public CardSprite getCard(int cardId) {
         return cardSprites.get(cardId);
@@ -313,17 +330,17 @@ public abstract class GameBoardImpl<TTexture> extends GameBoardMetrics
         String[] splitName = spriteName.split("_");
         int index = Integer.parseInt(splitName[1]);
 
-        if (splitName[0] == "Stock")
+        if (splitName[0].equals("Stock"))
             return stockSprite;
-        if (splitName[0] == "Waste")
+        if (splitName[0].equals("Waste"))
             return wasteSprite;
-        if (splitName[0] == "FreeCell")
+        if (splitName[0].equals("FreeCell"))
             return freeCellSprites.get(index);
-        if (splitName[0] == "Tableau")
+        if (splitName[0].equals("Tableau"))
             return tableauSprites.get(index);
-        if (splitName[0] == "Foundation")
+        if (splitName[0].equals("Foundation"))
             return foundationSprites.get(index);
-        if (splitName[0] == "Card")
+        if (splitName[0].equals("Card"))
             return cardSprites.get(index);
 
         return null;
@@ -338,7 +355,7 @@ public abstract class GameBoardImpl<TTexture> extends GameBoardMetrics
         String[] splitName = spriteName.split("_");
         int cardNumber = Integer.parseInt(splitName[1]);
 
-        if (splitName[0] == "Card") {
+        if (splitName[0].equals("Card")) {
             // What stack is this card in? What position in the stack is it?
             Game.FindCardResult fcr = game.findCard(cardNumber);
             if (null != fcr) {
@@ -354,17 +371,17 @@ public abstract class GameBoardImpl<TTexture> extends GameBoardMetrics
         String[] splitName = spriteName.split("_");
         int cardNumber = Integer.parseInt(splitName[1]);
 
-        if (splitName[0] == "Stock")
+        if (splitName[0].equals("Stock"))
             return game.getStock();
-        if (splitName[0] == "Waste")
+        if (splitName[0].equals("Waste"))
             return game.getWaste();
-        if (splitName[0] == "FreeCell")
+        if (splitName[0].equals("FreeCell"))
             return game.getFreeCells().get(cardNumber);
-        if (splitName[0] == "Tableau")
+        if (splitName[0].equals("Tableau"))
             return game.getTableaus().get(cardNumber);
-        if (splitName[0] == "Foundation")
+        if (splitName[0].equals("Foundation"))
             return game.getFoundations().get(cardNumber);
-        if (splitName[0] == "Card") {
+        if (splitName[0].equals("Card")) {
             // What stack is this card in? What position in the stack is it?
             Game.FindCardResult fcr = game.findCard(cardNumber);
             if (null != fcr) {
@@ -383,16 +400,14 @@ public abstract class GameBoardImpl<TTexture> extends GameBoardMetrics
         spriteDefaultActionEventHandler.fireOnSpriteDefaultAction(this, sprite);
     }
 
-    @Override
     public void onNewGameAction(GameEventObject args) {
         initBoard();
     }
 
-    @Override
     public void onRestoreGameAction(GameEventObject args) {
         termBoard();
         remakeSprites();
-        drawBoard();
+        layoutBoard();
     }
 
     private Deck<TTexture> deck;
